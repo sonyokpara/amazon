@@ -108,6 +108,13 @@ document.querySelectorAll(".js-add-to-cart").forEach((button) => {
       cart.push({ productId: productId, quantity: 1 });
     }
 
+    let cartQuantity = 0;
+    cart.forEach((cartItem) => {
+      cartQuantity += cartItem.quantity;
+    });
+
+    document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+    console.log(cartQuantity);
     console.log(cart);
   });
 });
