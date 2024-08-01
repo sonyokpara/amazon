@@ -1,4 +1,4 @@
-import { cart } from "../data/cart.js";
+import { cart, addToCart } from "../data/cart.js";
 import { products } from "../data/products.js";
 
 let productsHTML = "";
@@ -61,32 +61,21 @@ products.forEach((product) => {
 
 document.querySelector(".js-products-grid").innerHTML = productsHTML;
 
+function updateCartQuantity() {
+  let cartQuantity = 0;
+  cart.forEach((cartcartItem) => {
+    cartQuantity += cartcartItem.quantity;
+  });
+
+  document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+}
+
 document.querySelectorAll(".js-add-to-cart").forEach((button) => {
   button.addEventListener("click", () => {
     const { productId } = button.dataset;
-    let matchingItem;
 
-    cart.forEach((item) => {
-      if (item.productId === productId) {
-        matchingItem = item;
-      }
-    });
-
-    const quantityInput = document.querySelector(
-      `.js-quantity-selector-${productId}`
-    );
-    const quantity = Number(quantityInput.value);
-
-    if (matchingItem) {
-      matchingItem.quantity += quantity;
-    } else {
-      cart.push({ productId, quantity });
-    }
-
-    let cartQuantity = 0;
-    cart.forEach((cartItem) => {
-      cartQuantity += cartItem.quantity;
-    });
+    addToCart(productId);
+    updateCartQuantity();
 
     const flashMsg = document.querySelector(`.js-added-to-cart-${productId}`);
     flashMsg.classList.add("show-msg");
@@ -100,9 +89,5 @@ document.querySelectorAll(".js-add-to-cart").forEach((button) => {
     setTimeout(() => {
       flashMsg.classList.remove("show-msg");
     }, 2000);
-
-    document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
-    console.log(cartQuantity);
-    console.log(cart);
   });
 });
