@@ -1,4 +1,4 @@
-import { cart, removeFromCart } from "../data/cart.js";
+import { cart, removeFromCart, updateQuantity } from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 import { calculateCartQuantity } from "../data/cart.js";
@@ -32,15 +32,17 @@ cart.forEach((cartItem) => {
                   matchingProduct.priceCents
                 )}</div>
                 <div class="product-quantity">
-                    <span> Quantity: <span class="quantity-label">${
-                      cartItem.quantity
-                    }</span> </span>
+                    <span> Quantity: <span class="quantity-label js-quantity-label-${productId}">${
+    cartItem.quantity
+  }</span> </span>
                     <span class="js-update-quantity-link update-quantity-link link-primary" data-product-id="${
                       matchingProduct.id
                     }">
                     Update
                     </span>
-                    <input type="text" class="quantity-input js-quantity-input" />
+                    <input type="number" min="1" max="999" class="quantity-input js-item-quantity-${
+                      matchingProduct.id
+                    }"/>
                     <span class="save-quantity-link link-primary js-save-quantity-link" data-product-id="${
                       matchingProduct.id
                     }">Save</span>
@@ -112,9 +114,42 @@ document.querySelectorAll(".js-update-quantity-link").forEach((link) => {
       `.js-cart-item-container-${productId}`
     );
     cartItemContainer.classList.add("is-editing-quantity");
+    const quantity = document.querySelector(
+      `.js-quantity-label-${productId}`
+    ).innerHTML;
+
+    document.querySelector(`.js-item-quantity-${productId}`).value = quantity;
   });
 });
 
-function updateCartQuantity(calbck) {
-  document.querySelector(".js-checkout-quantity-").innerHTML = calbck();
+document.querySelectorAll(".js-save-quantity-link").forEach((link) => {
+  link.addEventListener("click", () => {
+    const { productId } = link.dataset;
+    const cartItemContainer = document.querySelector(
+      `.js-cart-item-container-${productId}`
+    );
+
+    const quantityInput = document.querySelector(
+      `.js-item-quantity-${productId}`
+    );
+    const newQuantity = Number(quantityInput.value);
+
+    if (newQuantity) {
+      document.querySelector(`.js-quantity-label-${productId}`).innerHTML =
+        newQuantity;
+    }
+
+    updateQuantity(productId, newQuantity);
+    updateCartQuantity(calculateCartQuantity);
+
+    quantityInput.value = "";
+    cartItemContainer.classList.remove("is-editing-quantity");
+  });
+});
+
+function updateCartQuantity(getCartQuantity) {
+  const cartQuantity = getCartQuantity();
+  const cartItems =
+    cartQuantity > 1 ? `${cartQuantity} items` : `${cartQuantity} item`;
+  document.querySelector(".js-checkout-quantity").innerHTML = cartItems;
 }
