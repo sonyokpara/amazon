@@ -46,7 +46,7 @@ export function addToCart(productId) {
   if (matchingItem) {
     matchingItem.quantity += quantity;
   } else {
-    cart.push({ productId, quantity, deliveryOptionId: 1 });
+    cart.push({ productId, quantity, deliveryOptionId: "1" });
   }
 
   saveToStorage();
@@ -79,4 +79,10 @@ export function calculateCartQuantity() {
     cartQuantity += cartcartItem.quantity;
   });
   return cartQuantity;
+}
+
+export function updateDeliveryOption(productId, deliveryOptionId) {
+  const matchingProduct = findMatchingItem(productId);
+  matchingProduct.deliveryOptionId = deliveryOptionId;
+  saveToStorage();
 }

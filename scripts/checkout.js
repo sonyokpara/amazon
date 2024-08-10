@@ -1,4 +1,9 @@
-import { cart, removeFromCart, updateQuantity } from "../data/cart.js";
+import {
+  cart,
+  removeFromCart,
+  updateQuantity,
+  updateDeliveryOption,
+} from "../data/cart.js";
 import { products } from "../data/products.js";
 import formatCurrency from "./utils/money.js";
 import { calculateCartQuantity } from "../data/cart.js";
@@ -90,17 +95,19 @@ function deliveryOptionsHTML(matchingProduct, cartItem) {
         ? "FREE"
         : `${formatCurrency(deliveryOption.priceCents)} -`;
     const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
-    optionsHTML += `<div class="delivery-option">
-                    <input type="radio" ${
-                      isChecked ? "checked" : ""
-                    } class="delivery-option-input" name="delivery-option-${
+    optionsHTML += `<div class="delivery-option js-delivery-option" data-product-id="${
+      matchingProduct.id
+    }" data-delivery-option-id="${deliveryOption.id}">
+                      <input type="radio" ${
+                        isChecked ? "checked" : ""
+                      } class="delivery-option-input" name="delivery-option-${
       matchingProduct.id
     }">
-                    <div>
-                    <div class="delivery-option-date">${dateString}</div>
-                    <div class="delivery-option-price">$${priceString} Shipping</div>
-                    </div>
-                </div>`;
+                      <div>
+                      <div class="delivery-option-date">${dateString}</div>
+                      <div class="delivery-option-price">$${priceString} Shipping</div>
+                      </div>
+                  </div>`;
   });
 
   return optionsHTML;
@@ -159,6 +166,13 @@ document.querySelectorAll(".js-save-quantity-link").forEach((link) => {
 
     quantityInput.value = "";
     cartItemContainer.classList.remove("is-editing-quantity");
+  });
+});
+
+document.querySelectorAll(".js-delivery-option").forEach((element) => {
+  element.addEventListener("click", () => {
+    const { productId, deliveryOptionId } = element.dataset;
+    updateDeliveryOption(productId, deliveryOptionId);
   });
 });
 
