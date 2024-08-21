@@ -35,22 +35,29 @@ export function calculateDeliveryDate(deliveryOption) {
   return dateString;
 }
 
-function isWeekend(date) {
-  return date.format("dddd") === "Saturday" || date.format("dddd") === "Sunday";
+function isWeekend(weekday) {
+  return weekday === "Saturday" || weekday === "Sunday";
 }
 
-export function deliveryDate(deliveryOption) {
-  let remainingDays = deliveryOption.deliveryDays;
+export function getDeliveryDate(deliveryOption) {
+  let daysToDeliver = deliveryOption.deliveryDays;
   let deliveryDays = 0;
+  let deliveryDate = "";
+  let weekday = "";
   const date = dayjs();
 
-  while (remainingDays > 0) {
+  while (daysToDeliver > 0) {
+    weekday = date.add(deliveryDays, "days");
+    weekday = weekday.format("dddd");
     deliveryDays += 1;
-    if (isWeekend(date)) {
+
+    if (isWeekend(weekday)) {
       continue;
+    } else {
+      daysToDeliver -= 1;
     }
-    remainingDays -= 1;
   }
-  const dueDate = date.add(deliveryDays, "days");
-  return dueDate.format("dddd, MMMM D");
+
+  deliveryDate = date.add(deliveryDays, "days");
+  return deliveryDate.format("dddd, MMMM D");
 }

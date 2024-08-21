@@ -10,7 +10,7 @@ import {
   deliveryOptions,
   getDeliveryOption,
   calculateDeliveryDate,
-  deliveryDate,
+  getDeliveryDate,
 } from "../../data/deliveryOptions.js";
 import renderPaymentSummary from "./paymentSummary.js";
 import { renderCheckoutHeader } from "./checkoutHeader.js";
@@ -23,27 +23,29 @@ function renderOrderSummary() {
     const matchingProduct = getProduct(productId);
     const deliveryOption = getDeliveryOption(deliveryOptionId);
 
-    const dateString = calculateDeliveryDate(deliveryOption);
+    // const dateString = calculateDeliveryDate(deliveryOption);
 
     cartSummaryHTML += `
-        <div class="cart-item-container js-cart-item-container-${
-          matchingProduct.id
-        }">
+        <div class="cart-item-container
+            js-cart-item-container 
+            js-cart-item-container-${matchingProduct.id}">
             <div class="delivery-date">Delivery date: 
-              ${deliveryDate(deliveryOption)}
+              ${getDeliveryDate(deliveryOption)}
             </div>
   
             <div class="cart-item-details-grid">
                 <img class="product-image" src="${matchingProduct.image}">
   
                 <div class="cart-item-details">
-                    <div class="product-name">
+                    <div class="product-name js-product-name-${
+                      matchingProduct.id
+                    }">
                         ${matchingProduct.name}
                     </div>
-                    <div class="product-price">$${formatCurrency(
-                      matchingProduct.priceCents
-                    )}</div>
-                    <div class="product-quantity">
+                    <div class="product-price js-product-price-${
+                      matchingProduct.id
+                    }">$${formatCurrency(matchingProduct.priceCents)}</div>
+                    <div class="product-quantity js-product-quantity-${productId}">
                         <span> Quantity: <span class="quantity-label js-quantity-label-${productId}">${
       cartItem.quantity
     }</span> </span>
@@ -58,9 +60,9 @@ function renderOrderSummary() {
                         <span class="save-quantity-link link-primary js-save-quantity-link" data-product-id="${
                           matchingProduct.id
                         }">Save</span>
-                        <span class="delete-quantity-link link-primary js-delete-link" data-product-id=${
+                        <span class="delete-quantity-link link-primary js-delete-link js-delete-link-${
                           matchingProduct.id
-                        }>
+                        }" data-product-id=${matchingProduct.id}>
                         Delete
                         </span>
                     </div>
@@ -94,7 +96,9 @@ function renderOrderSummary() {
             <input 
               type="radio" 
               ${isChecked ? "checked" : ""} 
-              class="delivery-option-input" 
+              class="delivery-option-input js-delivery-option-input-${
+                matchingProduct.id
+              }-${deliveryOption.id}" 
               name="delivery-option-${matchingProduct.id}"
             >
             <div>
@@ -170,7 +174,7 @@ function renderOrderSummary() {
       const { productId, deliveryOptionId } = element.dataset;
       updateDeliveryOption(productId, deliveryOptionId);
       const deliveryOption = getDeliveryOption(deliveryOptionId);
-      deliveryDate(deliveryOption);
+      getDeliveryDate(deliveryOption);
       renderOrderSummary();
       renderPaymentSummary();
     });
